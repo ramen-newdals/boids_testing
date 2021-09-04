@@ -4,32 +4,76 @@
 <style>
   body {
     color: #808080;
-		font-family:Monospace;
-		font-size:13px;
-		text-align:center;
+    font-family: Monospace;
+    font-size: 13px;
+    text-align: center;
 
-		background-color: black;
-		margin: 0px;
-		overflow: hidden;
-	}
+    background-color: black;
+    margin: 0px;
+    overflow: hidden;
+  }
 </style>
 
 <body>
   <div id="dat_gui_container"></div>
   <canvas id="three_boid"></canvas>
 
-	<!-- JavaScript -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.min.js">
-	</script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5.1/dat.gui.min.js">
-	</script>
+  <!-- JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.min.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5.1/dat.gui.min.js">
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r14/Stats.min.js">
-	</script>
+  </script>
 
   <script src="README.Projector.js"></script>
-	<script src="README.CanvasRenderer.js"></script>
-	<script src="README.OrbitControls.js"></script>
+  <script src="README.CanvasRenderer.js"></script>
+  <script src="README.OrbitControls.js"></script>
   <script src="README.physics_boid.js"></script>
-
   <script src="render_three_boid.js"></script>
+
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js'
+    import { addDoc, collection, doc, getDocs, getFirestore, increment, setDoc, updateDoc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.1/firebase-firestore.js'
+    const firebaseApp = initializeApp({
+      apiKey: "AIzaSyAjJwDS2o1eFY11t9IeExNHfSaaJkd16BA",
+      authDomain: "spark-frosh-game.firebaseapp.com",
+      projectId: "spark-frosh-game",
+      storageBucket: "spark-frosh-game.appspot.com",
+      messagingSenderId: "96530212396",
+      appId: "1:96530212396:web:1dc8a39de9685b8c601389",
+      measurementId: "G-Y1YPD5DFZD"
+    });
+
+    const db = getFirestore();
+
+    const docRef = doc(db, "frosh-group-scores", 'Beta')
+    const docSnap = await getDocs(collection(db, 'frosh-group-scores'))
+    var scoreList = []
+    docSnap.forEach(doc => {
+      console.log(doc.id , ": ", doc.data())
+      scoreList.push({id: doc.id, score: doc.data().score})
+    })
+    
+
+    scoreList.sort((a,b)=> {return(b.score - a.score)})
+    console.dir(scoreList)
+
+    var table = document.getElementById('scoreboard-table')
+    table.innerHTML = ""
+    for (var i = 0; i < scoreList.length; i++){
+      table.innerHTML += '<p>' + scoreList[i].id +  " - " + scoreList[i].score
+    }
+
+  </script>
+
+
+  <div class='scoreboard'  style="position:absolute; top:1em; left: 1em">
+    <p>Scoreboard</p>
+    <p>---</p>
+    <div id='scoreboard-table'>
+      LOADING ... 
+    </div>
+  </div>
 </body>
